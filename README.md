@@ -1,11 +1,12 @@
-Scrabble Game by Calvin Yorn - HW5
+# **Scrabble Game by Calvin Yorn - HW5**
 
-Email: calvin_yorn@student.uml.edu
+**Email:** calvin_yorn@student.uml.edu
 
-GitHub Repository: https://github.com/CalvinYorn/GUI-HW5
-GitHub Application: https://calvinyorn.github.io/GUI-HW5/
+**Links:**
+- **GitHub Repository:** https://github.com/CalvinYorn/GUI-HW5
+- **GitHub Application:** https://calvinyorn.github.io/GUI-HW5/
 
-Features:
+**Features:**
 
 - Full 15x15 Scrabble board with all bonus squares
 - Drag and drop tiles from rack to board
@@ -20,7 +21,7 @@ Features:
 - Validate Word button to score and deal new tiles
 - Visual feedback messages for all actions
 
-How to Play:
+**How to Play:**
 
 1. Drag tiles from your rack onto the board to form words
 2. First tile can go anywhere, then tiles must be adjacent to existing tiles
@@ -30,7 +31,7 @@ How to Play:
 6. Use Recall, Refresh, or Trash Bin buttons to adjust tiles
 7. Click New Game to start fresh
 
-Button Functions:
+**Button Functions:**
 
 - Validate Word - Scores your word with bonus multipliers and deals new tiles
 - New Game - Resets board, score, and tile distribution
@@ -38,7 +39,7 @@ Button Functions:
 - Refresh Tiles - Exchanges all 7 tiles for new random ones
 - Garbage Bin - Drag tiles here to discard them (brown bordered trash icon)
 
-Status:
+**Status:**
 
 All functions working properly with full garbage bin support.
 
