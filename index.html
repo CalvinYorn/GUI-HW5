@@ -1,0 +1,96 @@
+<!-- 
+Name: Calvin Yorn
+Due Date: 12/17/2025
+File: index.html
+
+GUI Assignment:
+    This assignment is about creating a web app copy of the infamous game scrabble, by utilizing jQuery and our knowledge of
+    HTML, CSS, and JavaScript.
+
+Calvin Yorn, UMass Lowell Computer Science, calvin_yorn@student.uml.edu
+Copyright (c) 2025 by Calvin Yorn. All rights reserved.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrabble Game by Calvin Yorn</title>
+    
+    <!-- jquery and jquery ui -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    
+    <!-- graphics data -->
+    <script src="graphics_data/Scrabble_Pieces_AssociativeArray_Jesse.js"></script>
+    
+    <!-- our css -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- header -->
+        <header>
+            <h1>Scrabble Game</h1>
+        </header>
+
+        <!-- main content -->
+        <main class="content">
+            <!-- left: how to play -->
+            <aside class="sidebar left-sidebar">
+                <h2>HOW TO PLAY</h2>
+                <ul>
+                    <li><strong>Drag tiles</strong> to the board to form words.</li>
+                    <li><strong>First word</strong> must cover the center star (★).</li>
+                    <li><strong>Validate</strong> to score your word.</li>
+                    <li><strong>Recall</strong> to undo last tile.</li>
+                    <li><strong>Refresh</strong> to swap all tiles.</li>
+                    <li><strong>Trash</strong> to discard tiles.</li>
+                </ul>
+                
+                <!-- score -->
+                <div class="score-box">
+                    <span class="score-label">Score:</span>
+                    <span class="score-value" id="scoreValue">0</span>
+                </div>
+            </aside>
+
+            <!-- center: board & controls -->
+            <section class="main-content">
+                <!-- board -->
+                <div class="board-container">
+                    <div id="scrabbleBoard" class="scrabble-board"></div>
+                </div>
+
+                <!-- controls -->
+                <div class="controls">
+                    <button id="validateWordBtn">Validate Word</button>
+                    <button id="newGameBtn">New Game</button>
+                    <button id="recallBtn">Recall Tile</button>
+                    <button id="refreshHandBtn">Refresh Tiles</button>
+                </div>
+
+                <!-- tile rack -->
+                <div class="rack-container">
+                    <div class="tile-rack"></div>
+                    <div class="trash-icon" id="trashIcon" title="Drag here to discard">🗑️</div>
+                </div>
+            </section>
+
+            <!-- right: letter stats -->
+            <aside class="sidebar right-sidebar">
+                <h2>LETTER STATS</h2>
+                <div class="stats-table"></div>
+            </aside>
+        </main>
+
+        <!-- message box -->
+        <div id="messageBox" class="message-box"></div>
+    </div>
+
+    <!-- game script -->
+    <script src="js/scrabble.js"></script>
+</body>
+</html>
