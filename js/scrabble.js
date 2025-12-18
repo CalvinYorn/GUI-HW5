@@ -435,4 +435,53 @@ function setupEventListeners() {
     $('#newGameBtn').on('click', newGame);
     $('#recallBtn').on('click', recallTile);
     $('#refreshHandBtn').on('click', refreshTiles);
+    setupTrashBin();
+}
+
+function setupTrashBin() {
+    const $trash = $('#trashIcon');
+    
+    $trash.droppable({
+        accept: '.tile',
+        drop: function(event, ui) {
+            const $tile = ui.draggable;
+            const letter = $tile.data('letter');
+            const rackIndex = $tile.data('rack-index');
+            const boardRow = $tile.data('board-row');
+            const boardCol = $tile.data('board-col');
+            
+            // check if tile is from rack
+            if (rackIndex !== undefined) {
+                // discard from rack
+                gameState.rack.splice(rackIndex, 1);
+                gameState.tilesBag.push(letter);
+                renderRack();
+                showMessage('Tile discarded!', 'info');
+            }
+            // check if tile is from board
+            else if (boardRow !== undefined && boardCol !== undefined) {
+                const squareId = `${boardRow}-${boardCol}`;
+                
+                // remove from board
+                delete gameState.tilesOnBoard[squareId];
+                gameState.tilesBag.push(letter);
+                
+                // clear the board square
+                $(`[data-row="${boardRow}"][data-col="${boardCol}"]`).empty();
+                
+                // add bonus square text back
+                const squareType = BOARD_CONFIG.squares[boardRow][boardCol];
+                const $square = $(`[data-row="${boardRow}"][data-col="${boardCol}"]`);
+                switch(squareType) {
+                    case 'TW': $square.html('<span>Triple<br>Word<br>Score</span>'); break;
+                    case 'DW': $square.html('<span>Double<br>Word<br>Score</span>'); break;
+                    case 'TL': $square.html('<span>Triple<br>Letter<br>Score</span>'); break;
+                    case 'DL': $square.html('<span>Double<br>Letter<br>Score</span>'); break;
+                }
+                if (boardRow === 7 && boardCol === 7) $square.text('★');
+                
+                showMessage('Tile discarded!', 'info');
+            }
+        }
+    });
 }
