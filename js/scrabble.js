@@ -69,7 +69,9 @@ const gameState = {
     rack: [],
     tilesBag: [],
     score: 0,
-    tilesOnBoard: {}
+    tilesOnBoard: {},
+    tilesRefreshedThisRound: false,
+    firstTilePlacedThisRound: false
 };
 
 // initialization
@@ -83,6 +85,8 @@ function initializeGame() {
     gameState.board = USE_FULL_BOARD ? BOARD_CONFIG.squares.map(row => [...row]) : [];
     gameState.tilesOnBoard = {};
     gameState.score = 0;
+    gameState.tilesRefreshedThisRound = false;
+    gameState.firstTilePlacedThisRound = false;
     
     // create tile bag
     createTileBag();
@@ -190,12 +194,23 @@ function makeRackDroppable($rack) {
             const boardCol = $tile.data('board-col');
             const letter = $tile.data('letter');
             
+            // cannot drag back if tiles were refreshed
+            if (gameState.tilesRefreshedThisRound) {
+                showMessage('Cannot drag tiles back after refreshing!', 'error');
+                return;
+            }
+            
             // only accept tiles from the board (not from rack)
             if (boardRow !== undefined && boardCol !== undefined) {
                 const squareId = `${boardRow}-${boardCol}`;
                 
                 // remove from board
                 delete gameState.tilesOnBoard[squareId];
+                
+                // reset first tile flag if all tiles are removed
+                if (Object.keys(gameState.tilesOnBoard).length === 0) {
+                    gameState.firstTilePlacedThisRound = false;
+                }
                 
                 // add back to rack
                 gameState.rack.push(letter);
@@ -264,6 +279,14 @@ function handleDrop($tile, $square, letter, row, col) {
         return;
     }
     
+    // check if this is the first tile and it must cover the center star
+    if (Object.keys(gameState.tilesOnBoard).length === 0 && !gameState.firstTilePlacedThisRound) {
+        if (row !== 7 || col !== 7) {
+            showMessage('First tile must cover the center star (★)!', 'error');
+            return;
+        }
+    }
+    
     // check adjacency if not first tile
     if (Object.keys(gameState.tilesOnBoard).length > 0) {
         const hasAdjacentTile = checkAdjacency(row, col);
@@ -276,6 +299,11 @@ function handleDrop($tile, $square, letter, row, col) {
     // place tile on board
     gameState.tilesOnBoard[squareId] = letter;
     
+    // mark that first tile has been placed this round
+    if (Object.keys(gameState.tilesOnBoard).length === 1) {
+        gameState.firstTilePlacedThisRound = true;
+    }
+    
     const tileImgPath = `graphics_data/Scrabble_Tile_${letter}.jpg`;
     const $placedTile = $(`<div class="tile" data-letter="${letter}">
                              <img src="${tileImgPath}" alt="${letter}">
@@ -283,12 +311,12 @@ function handleDrop($tile, $square, letter, row, col) {
     
     $square.empty().append($placedTile);
     
-    // make placed tile draggable back to rack
-    makeDraggable($placedTile);
-    
-    // store row and col for tile recall
-    $placedTile.data('board-row', row);
-    $placedTile.data('board-col', col);
+    // make placed tile draggable back to rack (unless tiles were refreshed)
+    if (!gameState.tilesRefreshedThisRound) {
+        makeDraggable($placedTile);
+        $placedTile.data('board-row', row);
+        $placedTile.data('board-col', col);
+    }
     
     // remove from rack
     const rackIndex = $tile.data('rack-index');
@@ -333,12 +361,22 @@ function validateWord() {
     dealTilesToRack(Object.keys(gameState.tilesOnBoard).length);
     gameState.tilesOnBoard = {};
     
+    // reset flags for next round
+    gameState.tilesRefreshedThisRound = false;
+    gameState.firstTilePlacedThisRound = false;
+    
     renderRack();
     updateScore();
     showMessage(`Word scored ${wordScore} points! Total: ${gameState.score}`, 'success');
 }
 
 function recallTile() {
+    // cannot recall if tiles were refreshed
+    if (gameState.tilesRefreshedThisRound) {
+        showMessage('Cannot recall after refreshing tiles!', 'error');
+        return;
+    }
+    
     // move last placed tile back to rack
     if (Object.keys(gameState.tilesOnBoard).length > 0) {
         const lastSquareId = Object.keys(gameState.tilesOnBoard).pop();
@@ -347,6 +385,11 @@ function recallTile() {
         
         gameState.rack.push(letter);
         delete gameState.tilesOnBoard[lastSquareId];
+        
+        // reset first tile flag if all tiles are recalled
+        if (Object.keys(gameState.tilesOnBoard).length === 0) {
+            gameState.firstTilePlacedThisRound = false;
+        }
         
         $(`[data-row="${row}"][data-col="${col}"]`).empty().text('');
         renderRack();
@@ -362,14 +405,20 @@ function refreshTiles() {
     gameState.rack = [];
     shuffleArray(gameState.tilesBag);
     dealTilesToRack(7);
+    
+    // mark that tiles have been refreshed this round
+    gameState.tilesRefreshedThisRound = true;
+    
     renderRack();
-    showMessage('Hand refreshed!', 'info');
+    showMessage('Hand refreshed! Cannot recall or drag tiles back to rack for this word.', 'info');
 }
 
 function newGame() {
     gameState.score = 0;
     gameState.rack = [];
     gameState.tilesOnBoard = {};
+    gameState.tilesRefreshedThisRound = false;
+    gameState.firstTilePlacedThisRound = false;
     
     // clear board and reset bonus text
     BOARD_CONFIG.squares.forEach((row, rowIdx) => {
